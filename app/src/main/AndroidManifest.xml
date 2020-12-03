@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Snake_tamz">
         <activity
-            android:name=".MainActivity"
+            android:name=".MenuActivity"
             android:label="@string/app_name"
             android:theme="@style/Theme.Snake_tamz.NoActionBar">
             <intent-filter>
