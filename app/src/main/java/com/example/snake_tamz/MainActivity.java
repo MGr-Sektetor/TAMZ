@@ -1,5 +1,7 @@
 package com.example.snake_tamz;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -17,12 +19,13 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-public class MainActivity extends Fragment {
+public class MainActivity extends Activity {
 
     Canvas canvas;
     Bitmap headAnimBitmap;
@@ -53,12 +56,12 @@ public class MainActivity extends Fragment {
         return single_instance;
     }
 
+
+
     @Override
-    public View onCreateView(
-            LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState
-    ) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
@@ -71,8 +74,7 @@ public class MainActivity extends Fragment {
         snakeAnimView = new SnakeAnimView(this);
         setContentView(snakeAnimView);
 
-        i = new Intent(String.valueOf(GameActivity.class));
-
+        i = new Intent(this,GameActivity.class);
     }
 
     class SnakeAnimView extends SurfaceView implements Runnable
@@ -82,7 +84,7 @@ public class MainActivity extends Fragment {
         volatile boolean playingSnake;
         Paint paint;
 
-        public SnakeAnimView(MainActivity context) {
+        public SnakeAnimView(Context context) {
             super(context);
             ourHolder = getHolder();
             paint = new Paint();
@@ -211,16 +213,4 @@ public class MainActivity extends Fragment {
     }
 
 
-
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        view.findViewById(R.id.button_second).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                NavHostFragment.findNavController(MainActivity.this)
-                        .navigate(R.id.action_SecondFragment_to_FirstFragment);
-            }
-        });
-    }
 }

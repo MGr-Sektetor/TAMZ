@@ -358,9 +358,9 @@ public class GameActivity extends Activity {
 
         //Load and scale bitmaps
         headBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.head);
-        bodyBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.body);
+        bodyBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.apple);
         tailBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.tail);
-        appleBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.apple);
+        appleBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.body);
 
         //scale the bitmaps to match the block size
         headBitmap = Bitmap.createScaledBitmap(headBitmap, blockSize, blockSize, false);
