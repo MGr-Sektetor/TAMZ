@@ -3,6 +3,7 @@ package com.example.snake_tamz;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -24,6 +25,11 @@ import android.view.SurfaceView;
 import java.io.IOException;
 import java.util.Random;
 
+import static android.content.ContentValues.TAG;
+
+@SuppressWarnings("deprecation")
+
+
 public class GameActivity extends Activity {
 
     Canvas canvas;
@@ -32,6 +38,7 @@ public class GameActivity extends Activity {
     Bitmap bodyBitmap;
     Bitmap tailBitmap;
     Bitmap appleBitmap;
+    private Context context;
 
     private SoundPool soundPool;
     int sample1 = -1;
@@ -173,6 +180,7 @@ public class GameActivity extends Activity {
             if(dead){
 
                 soundPool.play(sample4, 1, 1, 0, 0, 1);
+                checkHighscorePreferences();
                 score = 0;
                 getSnake();
 
@@ -269,6 +277,22 @@ public class GameActivity extends Activity {
 
 
     }
+
+    public void checkHighscorePreferences(){
+        if (score > loadHighscoreFromPreferences()) {
+            SharedPreferences sharedPreferences = context.getSharedPreferences(MainActivity.SHARED_PREFERENCES, MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putInt(MainActivity.HIGHSCORE, score);
+            editor.apply();
+            Log.d(TAG, "checkHighscorePreferences: new: " + score);
+        }
+    }
+
+    public int loadHighscoreFromPreferences(){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(MainActivity.SHARED_PREFERENCES, MODE_PRIVATE);
+        return sharedPreferences.getInt(MainActivity.HIGHSCORE, 0);
+    }
+
 
     @Override
     protected void onStop() {

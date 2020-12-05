@@ -19,7 +19,6 @@ import android.widget.Button;
 public class MenuActivity extends Activity {
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,12 +39,12 @@ public class MenuActivity extends Activity {
         levelButton.setOnClickListener(v -> {
             Intent intent = new Intent(MenuActivity.this, LevelSelectionActivity.class);
             startActivity(intent);
-        });
-
-        Button highscoreButton = findViewById(R.id.highscoreButton);
-        highscoreButton.setOnClickListener(v -> {
-            Intent intent = new Intent(MenuActivity.this, HighscoreActivity.class);
-            startActivity(intent);
         });*/
+
+        Button highscoreButton = findViewById(R.id.highestscoreButton);
+        highscoreButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MenuActivity.this, HighestScore.class);
+            startActivity(intent);
+        });
     }
 }

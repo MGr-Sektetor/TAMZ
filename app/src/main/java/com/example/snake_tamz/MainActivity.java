@@ -46,6 +46,9 @@ public class MainActivity extends Activity {
 
     Intent i;
 
+    public static final String SHARED_PREFERENCES = "sharedPrefs";
+    public static final String HIGHSCORE = "highscore";
+
     private static MainActivity single_instance = null;
     public static MainActivity getInstance()
     {
