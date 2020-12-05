@@ -9,6 +9,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Snake_tamz">
+
+
+        <activity android:name=".MainActivity" />
+        <activity android:name=".HighestScore" />
+
+        <activity android:name=".GameActivity"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"></activity>
+
         <activity
             android:name=".MenuActivity"
             android:label="@string/app_name"
@@ -19,6 +27,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <receiver android:name=".CallReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.PHONE_STATE" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

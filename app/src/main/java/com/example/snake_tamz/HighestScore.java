@@ -9,8 +9,6 @@ import android.widget.TextView;
 
 public class HighestScore extends Activity {
 
-    public static final String SHARED_PREFERENCES = "sharedPrefs";
-    public static final String HIGHSCORE = "highscore";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
