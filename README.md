@@ -1,6 +1,7 @@
 Klasický had
 
 -Použití Canvasu, BitMap, SurfaceView
+
 -Ukládání skóre 
 
 -Zvuky
