@@ -9,14 +9,13 @@ import android.widget.TextView;
 
 public class HighestScore extends Activity {
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_highestscore);
         setListeners();
-        //TextView text = findViewById(R.id.highscoreText2);
-       // text.setText(String.valueOf(loadHighscoreFromPreferences()));
+        TextView text = findViewById(R.id.highestscoreText);
+        text.setText(String.valueOf(loadHighscoreFromPreferences()));
     }
 
     public int loadHighscoreFromPreferences(){
@@ -25,9 +24,9 @@ public class HighestScore extends Activity {
     }
 
     public void setListeners(){
-        Button highscoreBackButton = findViewById(R.id.highestscoreButton);
-        highscoreBackButton.setOnClickListener(v -> {
-            Intent intent = new Intent(HighestScore.this, MainActivity.class);
+        Button highestscoreBackButton = findViewById(R.id.highestscoreBackButton);
+        highestscoreBackButton.setOnClickListener(v -> {
+            Intent intent = new Intent(HighestScore.this, MenuActivity.class);
             startActivity(intent);
             finish();
         });

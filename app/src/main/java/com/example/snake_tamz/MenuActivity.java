@@ -24,7 +24,6 @@ public class MenuActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setListeners();
-       // if (!fingerprintHandler.getAuthenticated()) setAuthentication();
 
     }
 
@@ -34,12 +33,6 @@ public class MenuActivity extends Activity {
             Intent intent = new Intent(MenuActivity.this, MainActivity.class);
             startActivity(intent);
         });
-
-       /* Button levelButton = findViewById(R.id.settings);
-        levelButton.setOnClickListener(v -> {
-            Intent intent = new Intent(MenuActivity.this, LevelSelectionActivity.class);
-            startActivity(intent);
-        });*/
 
         Button highscoreButton = findViewById(R.id.highestscoreButton);
         highscoreButton.setOnClickListener(v -> {

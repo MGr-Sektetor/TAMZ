@@ -67,6 +67,7 @@ public class GameActivity extends Activity {
     int numBlocksWide;
     int numBlocksHigh;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -122,6 +123,7 @@ public class GameActivity extends Activity {
         @Override
         public void run() {
             while (playingSnake) {
+                loadHighscoreFromPreferences();
                 updateGame();
                 drawGame();
                 controlFPS();
@@ -280,7 +282,7 @@ public class GameActivity extends Activity {
 
     public void checkHighscorePreferences(){
         if (score > loadHighscoreFromPreferences()) {
-            SharedPreferences sharedPreferences = context.getSharedPreferences(MainActivity.SHARED_PREFERENCES, MODE_PRIVATE);
+            SharedPreferences sharedPreferences = getSharedPreferences(MainActivity.SHARED_PREFERENCES, MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putInt(MainActivity.HIGHSCORE, score);
             editor.apply();
@@ -289,7 +291,7 @@ public class GameActivity extends Activity {
     }
 
     public int loadHighscoreFromPreferences(){
-        SharedPreferences sharedPreferences = context.getSharedPreferences(MainActivity.SHARED_PREFERENCES, MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences(MainActivity.SHARED_PREFERENCES, MODE_PRIVATE);
         return sharedPreferences.getInt(MainActivity.HIGHSCORE, 0);
     }
 
