@@ -3,6 +3,7 @@ package com.example.snake_tamz;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -21,6 +22,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.navigation.fragment.NavHostFragment;
@@ -42,7 +45,13 @@ public class MainActivity extends Activity {
 
     long lastFrameTime;
     int fps;
-    int hi;
+
+
+    public int loadHighscoreFromPreferences(){
+        SharedPreferences sharedPreferences = getSharedPreferences(MainActivity.SHARED_PREFERENCES, MODE_PRIVATE);
+        return sharedPreferences.getInt(MainActivity.HIGHSCORE, 0);
+    }
+
 
     Intent i;
 
@@ -133,12 +142,17 @@ public class MainActivity extends Activity {
                 paint.setTextSize(150);
                 canvas.drawText("Snake",10,150,paint);
                 paint.setTextSize(25);
-
-                canvas.drawText(" Hi Score: "+hi,10,screenHeight-50,paint);
+                canvas.drawText(" Hi Score: "+loadHighscoreFromPreferences(),10,screenHeight-50,paint);
 
                 Rect destRect = new Rect(screenWidth/2-100,screenHeight/2-100,screenWidth/2+100,screenHeight/2+100);
                 canvas.drawBitmap(headAnimBitmap,rectToBeDrawn,destRect,paint);
 
+               /*
+               ImageButton muteButton = new ImageButton(this);
+                gameWidgets.addView(muteButton);
+                game.addView(gameWidgets);
+                muteButton.setOnClickListener(this);
+                */
                 ourHolder.unlockCanvasAndPost(canvas);
 
             }
@@ -174,6 +188,7 @@ public class MainActivity extends Activity {
 
         @Override
         public boolean onTouchEvent(MotionEvent event) {
+
             startActivity(i);
             return true;
         }

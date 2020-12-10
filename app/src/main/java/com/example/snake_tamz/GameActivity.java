@@ -12,6 +12,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Bundle;
@@ -38,7 +39,8 @@ public class GameActivity extends Activity {
     Bitmap bodyBitmap;
     Bitmap tailBitmap;
     Bitmap appleBitmap;
-    private Context context;
+    private Bitmap[] bmp;
+    private volatile boolean soundOn = false;
 
     private SoundPool soundPool;
     int sample1 = -1;
@@ -55,7 +57,6 @@ public class GameActivity extends Activity {
     long lastFrameTime;
     int fps;
     int score;
-    int hi;
 
     int [] snakeX;
     int [] snakeY;
@@ -68,10 +69,11 @@ public class GameActivity extends Activity {
     int numBlocksHigh;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        //ImageButton.setImageResource(R.drawable.unmute);
         loadSound();
         configureDisplay();
         snakeView = new SnakeView(this);
@@ -141,7 +143,7 @@ public class GameActivity extends Activity {
                 getApple();
 
                 score = score + snakeLength;
-                soundPool.play(sample1, 1, 1, 0, 0, 1);
+                if (soundOn) soundPool.play(sample1, 1, 1, 0, 0, 1);
             }
 
             for(int i=snakeLength; i >0 ; i--){
@@ -181,7 +183,7 @@ public class GameActivity extends Activity {
 
             if(dead){
 
-                soundPool.play(sample4, 1, 1, 0, 0, 1);
+                if (soundOn) soundPool.play(sample4, 1, 1, 0, 0, 1);
                 checkHighscorePreferences();
                 score = 0;
                 getSnake();
@@ -197,7 +199,12 @@ public class GameActivity extends Activity {
                 canvas.drawColor(Color.BLACK);
                 paint.setColor(Color.argb(255, 255, 255, 255));
                 paint.setTextSize(topGap/2);
-                canvas.drawText("Score:" + score + "  Hi:" + hi, 10, topGap-6, paint);
+                canvas.drawText("Score:" + score + "  HighestScore:" + loadHighscoreFromPreferences(), 10, topGap-6, paint);
+
+              //  ImageButton muteButton = getResources(R.drawable.unmute);
+
+                canvas.drawBitmap(bmp[soundOn ? 1 : 2], null,
+                        new Rect(22 * blockSize + blockSize/2, 10 * blockSize, (22 * blockSize) + blockSize/2 + blockSize, (0 * blockSize) + blockSize-5), null);
 
                 paint.setStrokeWidth(3);
                 canvas.drawLine(1,topGap,screenWidth-1,topGap,paint);
@@ -207,12 +214,16 @@ public class GameActivity extends Activity {
                 canvas.drawBitmap(headBitmap, snakeX[0]*blockSize, (snakeY[0]*blockSize)+topGap, paint);
 
 
+
                 for(int i = 1; i < snakeLength-1;i++){
                     canvas.drawBitmap(bodyBitmap, snakeX[i]*blockSize, (snakeY[i]*blockSize)+topGap, paint);
                 }
                 canvas.drawBitmap(tailBitmap, snakeX[snakeLength-1]*blockSize, (snakeY[snakeLength-1]*blockSize)+topGap, paint);
                 canvas.drawBitmap(appleBitmap, appleX*blockSize, (appleY*blockSize)+topGap, paint);
                 ourHolder.unlockCanvasAndPost(canvas);
+
+
+
             }
 
         }
@@ -252,6 +263,15 @@ public class GameActivity extends Activity {
             ourThread.start();
         }
 
+
+
+        /*
+
+        Pokus o Swipe
+
+
+
+         */
 
         @Override
         public boolean onTouchEvent(MotionEvent motionEvent) {
@@ -388,11 +408,17 @@ public class GameActivity extends Activity {
         tailBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.tail);
         appleBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.body);
 
+        bmp = new Bitmap[3];
+
+        bmp[1] = BitmapFactory.decodeResource(getResources(),R.drawable.muted);
+        bmp[2] = BitmapFactory.decodeResource(getResources(),R.drawable.unmuted);
+
         //scale the bitmaps to match the block size
         headBitmap = Bitmap.createScaledBitmap(headBitmap, blockSize, blockSize, false);
         bodyBitmap = Bitmap.createScaledBitmap(bodyBitmap, blockSize, blockSize, false);
         tailBitmap = Bitmap.createScaledBitmap(tailBitmap, blockSize, blockSize, false);
         appleBitmap = Bitmap.createScaledBitmap(appleBitmap, blockSize, blockSize, false);
+
 
     }
 
