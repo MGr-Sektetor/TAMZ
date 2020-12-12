@@ -45,4 +45,31 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.362" />
 
+    <TextView
+        android:id="@+id/locationText2"
+        android:layout_width="112dp"
+        android:layout_height="37dp"
+        android:layout_marginTop="363dp"
+        android:text="Skore jste udělali v: "
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.227"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.492" />
+
+    <TextView
+        android:id="@+id/locationText"
+        android:layout_width="81dp"
+        android:layout_height="19dp"
+        android:layout_marginTop="380dp"
+        android:text=""
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.575"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.439" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

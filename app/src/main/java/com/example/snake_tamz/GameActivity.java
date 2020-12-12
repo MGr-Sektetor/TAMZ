@@ -1,11 +1,14 @@
 package com.example.snake_tamz;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -13,6 +16,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Bundle;
@@ -22,6 +29,11 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.Toast;
+
+import androidx.core.app.ActivityCompat;
+
+import com.example.snake_tamz.Database;
 
 import java.io.IOException;
 import java.util.Random;
@@ -31,7 +43,10 @@ import static android.content.ContentValues.TAG;
 @SuppressWarnings("deprecation")
 
 
-public class GameActivity extends Activity {
+
+public class GameActivity extends Activity implements LocationListener {
+
+    private static Database myDb;
 
     Canvas canvas;
     SnakeView snakeView;
@@ -68,6 +83,55 @@ public class GameActivity extends Activity {
     int numBlocksWide;
     int numBlocksHigh;
 
+    private LocationManager locationManager;
+    private double latitude  = 0;
+    private double longitude = 0;
+    private String provider;
+
+    @Override
+    public void onProviderEnabled(String provider) {
+        Toast.makeText(this, "Enabled new provider " + provider,
+                Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+        Toast.makeText(this, "Disabled provider " + provider,
+                Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        latitude = location.getLatitude();
+        longitude = location.getLongitude();
+    }
+
+    private void updateLocation(){
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+            Criteria criteria = new Criteria();
+            provider = locationManager.getBestProvider(criteria, false);
+
+            if(provider != null) {
+                locationManager.requestSingleUpdate(provider, this, null);
+                Location location = locationManager.getLastKnownLocation(provider);
+
+                if(location != null) {
+                    latitude = location.getLatitude();
+                    longitude = location.getLongitude();
+                }
+            }
+
+        }
+
+    }
+
+
 
 
     @Override
@@ -78,6 +142,7 @@ public class GameActivity extends Activity {
         configureDisplay();
         snakeView = new SnakeView(this);
         setContentView(snakeView);
+        myDb = new Database(this);
 
     }
     class SnakeView extends SurfaceView implements Runnable {
@@ -88,6 +153,7 @@ public class GameActivity extends Activity {
 
         public SnakeView(Context context) {
             super(context);
+
             ourHolder = getHolder();
             paint = new Paint();
 
@@ -125,6 +191,7 @@ public class GameActivity extends Activity {
         @Override
         public void run() {
             while (playingSnake) {
+               // extractDb();
                 loadHighscoreFromPreferences();
                 updateGame();
                 drawGame();
@@ -182,6 +249,8 @@ public class GameActivity extends Activity {
             }
 
             if(dead){
+
+
 
                 if (soundOn) soundPool.play(sample4, 1, 1, 0, 0, 1);
                 checkHighscorePreferences();
@@ -263,16 +332,6 @@ public class GameActivity extends Activity {
             ourThread.start();
         }
 
-
-
-        /*
-
-        Pokus o Swipe
-
-
-
-         */
-
         @Override
         public boolean onTouchEvent(MotionEvent motionEvent) {
 
@@ -302,11 +361,20 @@ public class GameActivity extends Activity {
 
     public void checkHighscorePreferences(){
         if (score > loadHighscoreFromPreferences()) {
+
+            if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            }
+            else{
+            updateLocation();
             SharedPreferences sharedPreferences = getSharedPreferences(MainActivity.SHARED_PREFERENCES, MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putInt(MainActivity.HIGHSCORE, score);
+            editor.putString(MainActivity.LOCATION,location);
             editor.apply();
             Log.d(TAG, "checkHighscorePreferences: new: " + score);
+            UpdateData(String.valueOf(score), soundOn ? "0" : "1");
+            }
         }
     }
 
@@ -421,6 +489,44 @@ public class GameActivity extends Activity {
 
 
     }
+
+
+
+    private void extractDb(){
+        Cursor entries = getEntries();
+        entries.moveToNext();
+        entries.getString(0);
+        score = Integer.parseInt(entries.getString(1));
+        soundOn = Integer.parseInt(entries.getString(2)) == 1 ? true : false;
+    }
+
+    public static Cursor getEntries(){
+        Cursor res = myDb.getData();
+        if(res.getCount()==0){
+            addData();
+            getEntries();
+
+        }
+        return res;
+    }
+
+    public void viewAll() {
+        Cursor res = myDb.getData();
+        if(res.getCount() == 0) {
+            addData();
+            return;
+        }
+    }
+
+    public static void UpdateData(String highestscore, String sound){
+        boolean isUpdate = myDb.updateData("1",highestscore,sound);
+    }
+
+    public static void addData(){
+        myDb.insertData("0","1");
+    }
+
+    public void deleteData(){Integer deleteRows = myDb.deleteData("1");}
 
 
 }
