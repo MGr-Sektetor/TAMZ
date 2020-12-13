@@ -122,8 +122,12 @@ public class GameActivity extends Activity implements LocationListener {
                 Location location = locationManager.getLastKnownLocation(provider);
 
                 if(location != null) {
-                    latitude = location.getLatitude();
-                    longitude = location.getLongitude();
+                    SharedPreferences sharedPreferences = getSharedPreferences(MainActivity.SHARED_PREFERENCES, MODE_PRIVATE);
+
+                    sharedPreferences.edit().putString(MainActivity.LOCATION, String.valueOf(location.getLatitude())).apply();
+                    sharedPreferences.edit().putString(MainActivity.LOCATION, String.valueOf(location.getLongitude())).apply();
+                    sharedPreferences.edit().putString(MainActivity.LOCATION, location.getProvider()).apply();
+
                 }
             }
 
@@ -191,7 +195,7 @@ public class GameActivity extends Activity implements LocationListener {
         @Override
         public void run() {
             while (playingSnake) {
-               // extractDb();
+                // extractDb();
                 loadHighscoreFromPreferences();
                 updateGame();
                 drawGame();
@@ -209,7 +213,7 @@ public class GameActivity extends Activity implements LocationListener {
 
                 getApple();
 
-                score = score + snakeLength;
+                score = score + snakeLength+10;
                 if (soundOn) soundPool.play(sample1, 1, 1, 0, 0, 1);
             }
 
@@ -250,8 +254,6 @@ public class GameActivity extends Activity implements LocationListener {
 
             if(dead){
 
-
-
                 if (soundOn) soundPool.play(sample4, 1, 1, 0, 0, 1);
                 checkHighscorePreferences();
                 score = 0;
@@ -270,7 +272,7 @@ public class GameActivity extends Activity implements LocationListener {
                 paint.setTextSize(topGap/2);
                 canvas.drawText("Score:" + score + "  HighestScore:" + loadHighscoreFromPreferences(), 10, topGap-6, paint);
 
-              //  ImageButton muteButton = getResources(R.drawable.unmute);
+                //  ImageButton muteButton = getResources(R.drawable.unmute);
 
                 canvas.drawBitmap(bmp[soundOn ? 1 : 2], null,
                         new Rect(22 * blockSize + blockSize/2, 10 * blockSize, (22 * blockSize) + blockSize/2 + blockSize, (0 * blockSize) + blockSize-5), null);
@@ -283,16 +285,12 @@ public class GameActivity extends Activity implements LocationListener {
                 canvas.drawBitmap(headBitmap, snakeX[0]*blockSize, (snakeY[0]*blockSize)+topGap, paint);
 
 
-
                 for(int i = 1; i < snakeLength-1;i++){
                     canvas.drawBitmap(bodyBitmap, snakeX[i]*blockSize, (snakeY[i]*blockSize)+topGap, paint);
                 }
                 canvas.drawBitmap(tailBitmap, snakeX[snakeLength-1]*blockSize, (snakeY[snakeLength-1]*blockSize)+topGap, paint);
                 canvas.drawBitmap(appleBitmap, appleX*blockSize, (appleY*blockSize)+topGap, paint);
                 ourHolder.unlockCanvasAndPost(canvas);
-
-
-
             }
 
         }
@@ -308,7 +306,7 @@ public class GameActivity extends Activity implements LocationListener {
                 try {
                     ourThread.sleep(timeToSleep);
                 } catch (InterruptedException e) {
-                   Log.e("error", "failed to load sound files");
+                    Log.e("error", "failed to load sound files");
                 }
 
             }
@@ -366,14 +364,13 @@ public class GameActivity extends Activity implements LocationListener {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             }
             else{
-            updateLocation();
-            SharedPreferences sharedPreferences = getSharedPreferences(MainActivity.SHARED_PREFERENCES, MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putInt(MainActivity.HIGHSCORE, score);
-            editor.putString(MainActivity.LOCATION,location);
-            editor.apply();
-            Log.d(TAG, "checkHighscorePreferences: new: " + score);
-            UpdateData(String.valueOf(score), soundOn ? "0" : "1");
+                SharedPreferences sharedPreferences = getSharedPreferences(MainActivity.SHARED_PREFERENCES, MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putInt(MainActivity.HIGHSCORE, score);
+                editor.apply();
+                Log.d(TAG, "checkHighscorePreferences: new: " + score);
+                UpdateData(String.valueOf(score), soundOn ? "0" : "1");
+                updateLocation();
             }
         }
     }

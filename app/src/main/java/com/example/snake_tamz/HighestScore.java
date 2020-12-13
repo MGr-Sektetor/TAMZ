@@ -19,7 +19,7 @@ public class HighestScore extends Activity {
         TextView text = findViewById(R.id.highestscoreText);
         text.setText(String.valueOf(loadHighscoreFromPreferences()));
         TextView text2 = findViewById(R.id.locationText);
-        text2.setText(String.valueOf(loadCurrentLocationFromPreferences()));
+        text2.setText(loadCurrentLocationFromPreferences());
     }
 
     public int loadHighscoreFromPreferences(){
@@ -29,7 +29,20 @@ public class HighestScore extends Activity {
 
     public String loadCurrentLocationFromPreferences(){
         SharedPreferences sharedPreferences = this.getSharedPreferences(MainActivity.SHARED_PREFERENCES, MODE_PRIVATE);
-        return sharedPreferences.getString(MainActivity.LOCATION, "test");
+        String lat = sharedPreferences.getString("LOCATION_LAT", null);
+        String lon = sharedPreferences.getString("LOCATION_LON", null);
+
+        Location location = null;
+        if (lat != null && lon != null)
+        {
+            String provider = sharedPreferences.getString("LOCATION_PROVIDER", null);
+            location = new Location(provider);
+            location.setLatitude(Double.parseDouble(lat));
+            location.setLongitude(Double.parseDouble(lon));
+        }
+
+        return String.valueOf(location);
+
     }
 
     public void setListeners(){
