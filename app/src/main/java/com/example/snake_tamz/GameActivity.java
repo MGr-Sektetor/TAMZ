@@ -1,11 +1,9 @@
 package com.example.snake_tamz;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.database.Cursor;
@@ -16,10 +14,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.location.Criteria;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Bundle;
@@ -29,11 +23,6 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.widget.Toast;
-
-import androidx.core.app.ActivityCompat;
-
-import com.example.snake_tamz.Database;
 
 import java.io.IOException;
 import java.util.Random;
@@ -44,7 +33,7 @@ import static android.content.ContentValues.TAG;
 
 
 
-public class GameActivity extends Activity implements LocationListener {
+public class GameActivity extends Activity{
 
     private static Database myDb;
 
@@ -55,13 +44,11 @@ public class GameActivity extends Activity implements LocationListener {
     Bitmap tailBitmap;
     Bitmap appleBitmap;
     private Bitmap[] bmp;
-    private volatile boolean soundOn = false;
+    private volatile boolean soundOn = true;
 
     private SoundPool soundPool;
     int sample1 = -1;
     int sample2 = -1;
-    int sample3 = -1;
-    int sample4 = -1;
 
     int directionOfTravel=0;
 
@@ -82,60 +69,14 @@ public class GameActivity extends Activity implements LocationListener {
     int blockSize;
     int numBlocksWide;
     int numBlocksHigh;
-
-    private LocationManager locationManager;
-    private double latitude  = 0;
-    private double longitude = 0;
-    private String provider;
-
-    @Override
-    public void onProviderEnabled(String provider) {
-        Toast.makeText(this, "Enabled new provider " + provider,
-                Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-        Toast.makeText(this, "Disabled provider " + provider,
-                Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        latitude = location.getLatitude();
-        longitude = location.getLongitude();
-    }
-
-    private void updateLocation(){
-        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-            Criteria criteria = new Criteria();
-            provider = locationManager.getBestProvider(criteria, false);
-
-            if(provider != null) {
-                locationManager.requestSingleUpdate(provider, this, null);
-                Location location = locationManager.getLastKnownLocation(provider);
-
-                if(location != null) {
-                    SharedPreferences sharedPreferences = getSharedPreferences(MainActivity.SHARED_PREFERENCES, MODE_PRIVATE);
-
-                    sharedPreferences.edit().putString(MainActivity.LOCATION, String.valueOf(location.getLatitude())).apply();
-                    sharedPreferences.edit().putString(MainActivity.LOCATION, String.valueOf(location.getLongitude())).apply();
-                    sharedPreferences.edit().putString(MainActivity.LOCATION, location.getProvider()).apply();
-
-                }
-            }
-
+    private static GameActivity single_instance = null;
+    public static Context getInstance() {
+        if (single_instance == null)
+        {
+            single_instance = new GameActivity();
         }
-
+        return single_instance;
     }
-
-
 
 
     @Override
@@ -161,13 +102,10 @@ public class GameActivity extends Activity implements LocationListener {
             ourHolder = getHolder();
             paint = new Paint();
 
-
             snakeX = new int[200];
             snakeY = new int[200];
 
-
             getSnake();
-
             getApple();
         }
 
@@ -213,7 +151,7 @@ public class GameActivity extends Activity implements LocationListener {
 
                 getApple();
 
-                score = score + snakeLength+10;
+                score = score + snakeLength+11;
                 if (soundOn) soundPool.play(sample1, 1, 1, 0, 0, 1);
             }
 
@@ -253,9 +191,8 @@ public class GameActivity extends Activity implements LocationListener {
             }
 
             if(dead){
-
-                if (soundOn) soundPool.play(sample4, 1, 1, 0, 0, 1);
                 checkHighscorePreferences();
+                if (soundOn) soundPool.play(sample2, 1, 1, 0, 0, 1);
                 score = 0;
                 getSnake();
 
@@ -359,19 +296,13 @@ public class GameActivity extends Activity implements LocationListener {
 
     public void checkHighscorePreferences(){
         if (score > loadHighscoreFromPreferences()) {
-
-            if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-            }
-            else{
                 SharedPreferences sharedPreferences = getSharedPreferences(MainActivity.SHARED_PREFERENCES, MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putInt(MainActivity.HIGHSCORE, score);
                 editor.apply();
                 Log.d(TAG, "checkHighscorePreferences: new: " + score);
-                UpdateData(String.valueOf(score), soundOn ? "0" : "1");
-                updateLocation();
-            }
+                //UpdateData(String.valueOf(score), soundOn ? "0" : "1");
+                //updateLocation();
         }
     }
 
@@ -434,13 +365,6 @@ public class GameActivity extends Activity implements LocationListener {
 
             descriptor = assetManager.openFd("sample2.ogg");
             sample2 = soundPool.load(descriptor, 0);
-
-
-            descriptor = assetManager.openFd("sample3.ogg");
-            sample3 = soundPool.load(descriptor, 0);
-
-            descriptor = assetManager.openFd("sample4.ogg");
-            sample4 = soundPool.load(descriptor, 0);
 
 
         } catch (IOException e) {

@@ -27,10 +27,10 @@
         android:text=""
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.575"
+        app:layout_constraintHorizontal_bias="0.609"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.309" />
+        app:layout_constraintVertical_bias="0.31" />
 
     <TextView
         android:id="@+id/highestscoreText2"
@@ -47,8 +47,8 @@
 
     <TextView
         android:id="@+id/locationText2"
-        android:layout_width="112dp"
-        android:layout_height="37dp"
+        android:layout_width="124dp"
+        android:layout_height="38dp"
         android:layout_marginTop="363dp"
         android:text="Skore jste udělali v: "
         app:layout_constraintBottom_toBottomOf="parent"
@@ -66,7 +66,7 @@
         android:text=""
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.575"
+        app:layout_constraintHorizontal_bias="0.609"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.439" />
