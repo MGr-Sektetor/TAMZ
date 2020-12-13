@@ -342,8 +342,6 @@ public class GameActivity extends Activity{
 
             snakeView.pause();
 
-
-
             Intent i = new Intent(this, MenuActivity.class);
             startActivity(i);
             finish();
